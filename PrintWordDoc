@@ -1,0 +1,85 @@
+'*************************************************************************************************************************************************************************
+' Purpose: This generic function will print a Word document by specifying the below parameters.
+'                Parameters:
+'                      db -                           current session database.
+'                      sourceFilePath -        specify the complete file path of the Word document you need to be faxed.
+'                      tmpFilePath -             the complete temporary file path where it will be used to save a copy of the original Word doc. 
+'                                                       It will be used as an active document for processing.
+'                      bookmarkNames() -  array of bookmarks already defined within the Word Document. NB: must be an array!
+'                      bookmarkValues() -  array of values for above bookmarkNames(). NB: number of elements must match bookmarkNames() elements.
+'                      printFlag                -  True/False value. If True, Word Doc is for printing ONLY.
+'                                                      If False, Word Doc is for setup and save to tmpFilePath, which will eventually be faxed by the SendFax( )
+'                                                      or used for other means. In either case, tmpFilePath is not deleted after function exits.
+'                                                      This tmpFilePath may be deleted outside this function after use.
+'
+Public Function PrintWordDoc( db As NotesDatabase, sourceFilePath As String, tmpFilePath As String, _ 
+bookmarkNames() As String, bookmarkValues() As String, OutputType As String ) As Integer
+	
+	On Error Goto errHandler
+	
+	Dim wordObject As Variant
+	Dim wordDoc As Variant
+	Dim varValues As Variant
+	Dim i As Integer
+	Dim MsgTxt As String
+	Dim ws As New notesuiworkspace
+	Dim doc As notesdocument
+	Dim uidoc As notesuidocument
+	
+	Set uidoc = ws.currentdocument
+	Set doc = uidoc.document
+	
+	Set wordObject = getObject("","Word.application")
+	
+     ' wordObject.Visible = True
+	Set wordDoc = wordObject.Documents.Add( sourceFilePath )
+     ' In case action is a .dot file which might be read-only...
+     ' Also never write to the original Word document...
+	Kill ( tmpFilePath )
+	
+	varValues = bookmarkValues 
+	For i = 0 To Ubound( bookmarkNames )
+		If bookmarkNames(i) <> "" Then
+			If bookmarkNames(i) = "LetterHead" Then
+				wordDoc.Bookmarks.Item( bookmarkNames(i) ).Range.InsertFile varValues( i )
+			Else
+				wordDoc.Bookmarks.Item( bookmarkNames(i) ).Range.Text = varValues( i )
+			End If
+		End If
+	Next
+	
+	Call wordDoc.SaveAs( tmpFilePath )     
+	
+	Select Case OutputType
+	Case "Print"
+		Call wordDoc.PrintOut
+		
+	Case "Email"
+		
+	Case "Fax"
+		
+	End Select
+	
+	Call wordDoc.Close
+'     Call wordObject.quit( 0 ) - WARNING: enable this statement might not print sometimes.
+'     do not delete tmpFilePath as it may used outside this function after printing / setup.
+'     If printFlag Then Kill ( tmpFilePath )
+	
+	
+	PrintWordDoc = True
+	Exit Function
+	
+errHandler:
+	If Err = 208 Then
+'		Set wordObject = createObject("Word.application")
+		Messagebox "Load Microsoft Word before proceeding", 0 + 64 , "Information"	
+		Exit Function
+	End If
+     ' Path/file access error...
+	If Err = 75 Then Resume Next
+	Beep
+	Msgbox "Error " + Cstr(Err()) + ": " + Error$() + "." + Chr(10) +  "An error was encountered on line " + Cstr(Erl())
+	Messagebox "Error" & Str(Err) & ": " & Error$, 0+16+0+0, "Print Word Document"
+	PrintWordDoc = False
+	Exit Function
+End Function
