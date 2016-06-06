@@ -1,0 +1,85 @@
+Public Sub InitUpdateVendorDetailGWF
+	
+	If gMD_Z_BAPI_VENDOR_UPDATE Is Nothing Then
+		Set gMD_Z_BAPI_VENDOR_UPDATE = New SAPMetaData(57,3)
+		gMD_Z_BAPI_VENDOR_UPDATE.IsInitialized = False
+	End If
+	
+	If Not gMD_Z_BAPI_VENDOR_UPDATE.IsInitialized Then
+		gMD_Z_BAPI_VENDOR_UPDATE.BAPI_NAME = "Z_BAPI_VENDOR_UPDATE"
+		gMD_Z_BAPI_VENDOR_UPDATE.Fetch1Row = False
+		
+		' inputs
+		
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 0, "SAPNumber",  "VENDORDETAILS", "LIFNR", False
+		'
+		gMD_Z_BAPI_VENDOR_UPDATE.InitinputItem 1, "Name", "VENDORDETAILS", "NAME1", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 2, "CompanyCode", "VENDORDETAILS", "BUKRS", False	
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 3, "AccountGroup", "VENDORDETAILS", "KTOKK", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 4, "Street", "VENDORDETAILS", "STRAS", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 5, "Suburb", "VENDORDETAILS", "ORT01", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 6, "State", "VENDORDETAILS", "REGIO", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 7, "PostCode", "VENDORDETAILS", "PSTLZ", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 8, "Country", "VENDORDETAILS", "LAND1", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 9, "District", "VENDORDETAILS", "ORT02", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 10, "POBox", "VENDORDETAILS", "PFACH", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 11, "POSuburb", "VENDORDETAILS", "PFORT", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 12, "POPostCode", "VENDORDETAILS", "PSTL2", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 13, "Telephone1", "VENDORDETAILS", "TELF1", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 14, "Telephone2", "VENDORDETAILS", "TELF2", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 15, "MobilePhone", "VENDORDETAILS", "MOBILE", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 16, "Fax", "VENDORDETAILS", "TELFX", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 17, "BankCountry", "VENDORDETAILS", "BANKS", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 18, "BankBSB", "VENDORDETAILS", "BANKL", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 19, "BankAC", "VENDORDETAILS", "BANKN", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 20, "BankName", "VENDORDETAILS", "BANKA", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 21, "BankBranch", "VENDORDETAILS", "BRANCH", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 22, "UpdateIndicator",  "VENDORDETAILS", "UPDKZ", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 23, "Name2",  "VENDORDETAILS", "NAME2", False
+'	
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 24, "ABN", "VENDORDETAILS", "STCEG", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 25, "ACN", "VENDORDETAILS", "NAME4", False		
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 26, "AttentionTo", "VENDORDETAILS", "ATTN_IND", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 27, "CareOf", "VENDORDETAILS", "CO_IND", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 28, "IndustryCode", "VENDORDETAILS", "BRSCH", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 29, "GrainGrowerNo", "VENDORDETAILS", "SORTL", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 30, "Agent", "VENDORDETAILS", "AGENT", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 31, "SearchTerm2", "VENDORDETAILS", "SORT2", False
+		
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 32, "UpdateIndicator",  "VENDORDETAILS", "UPDKZ", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 33, "NoCheck",  "VENDORDETAILS", "NOCHECK_DUP", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 34, "LotusID",  "VENDORDETAILS", "LOTUSID", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 35, "Email",  "VENDORDETAILS", "SMTP_ADDR", False
+'
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 36, "PaymentTerms", "VENDORDETAILS", "LFB1_ZTERM", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 37, "ReconAccount", "VENDORDETAILS", "LFB1_AKONT", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 38, "CheckDoubleInv", "VENDORDETAILS", "LFB1_REPRF", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 39, "PaymentMethods", "VENDORDETAILS", "LFB1_ZWELS", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 40, "SortKey", "VENDORDETAILS", "LFB1_ZUAWA", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 41, "ClerksEmail", "VENDORDETAILS", "LFB1_INTAD", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 42, "ClerksFax", "VENDORDETAILS", "LFB1_TLFXS", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 43, "AccountAtVendor", "VENDORDETAILS", "LFB1_EIKTO", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 44, "AccountMemo", "VENDORDETAILS", "LFB1_KVERM", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 45, "PaymentBlock", "VENDORDETAILS", "LFB1_ZAHLS", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 46, "VendorUser", "VENDORDETAILS", "LFB1_ZSABE", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 47, "ClerkTelNo", "VENDORDETAILS", "LFB1_TLFNS", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 48, "DeletionFlag", "VENDORDETAILS", "LFB1_LOEVM", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 49, "COCodeBlock", "VENDORDETAILS", "LFB1_SPERR", False
+		
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 50, "OrderCurrency", "VENDORDETAILS", "LFM1_WAERS", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 51, "GRBasedInv", "VENDORDETAILS", "LFM1_WEBRE", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 52, "PaymentTerms", "VENDORDETAILS", "LFM1_ZTERM", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 53, "AutomaticPO", "VENDORDETAILS", "LFM1_KZAUT", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 54, "PurchasingBlock", "VENDORDETAILS", "LFM1_SPERM", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 55, "PurchasingDeleteFlag", "VENDORDETAILS", "LFM1_LOEVM", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitInputItem 56, "PurchasingOrg", "VENDORDETAILS", "LFM1_EKORG", False		
+		'
+		' Output
+		gMD_Z_BAPI_VENDOR_UPDATE.InitOutputItem 0, "SAPNumber", "EXPORTS", "VENDOR", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitOutputItem 1, "Message", "EXPORTS", "MESSAGE", False
+		gMD_Z_BAPI_VENDOR_UPDATE.InitOutputItem 2, "Duplicate", "EXPORTS", "DUPLICATE", False
+		
+		gMD_Z_BAPI_VENDOR_UPDATE.IsInitialized = True
+	End If	
+	
+End Sub
