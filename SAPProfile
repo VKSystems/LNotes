@@ -1,0 +1,70 @@
+Function getSAPprofileByKey(sapkey As String, sapflds List As Variant) As Long
+	REM NOTE: sapkey is in the format of SAPserverIP~SAPUserName
+	Dim s As New NotesSession
+	Dim sapdoc As NotesDocument
+	Dim pernab As NotesDatabase, accview As NotesView
+	Dim keyarr(1) As String, fldarr(8) As String
+	Dim curnab As String, curnabarr
+	
+	On Error Goto errHandler
+	
+	' this array is where you list the flds you want to return from the profile
+	fldarr(0) = "SAPUserName"
+	fldarr(1) = "SAPUserPassword"
+	fldarr(2) = "SAPEmployeeID"
+	fldarr(3) = "SAPServerIP"
+	fldarr(4) = "SAPSystemName"
+	fldarr(5) = "SAPSystemNumber"
+	fldarr(6) = "SAPClientNumber"
+	fldarr(7) = "SAPLangDesignator"
+	fldarr(8) = "SAPFiscalYearStart"
+	
+	' get the personal nab
+	If Isarray(s.AddressBooks) Then
+		Forall db In s.AddressBooks
+			If db.isPrivateAddressBook Then
+				Set pernab = db
+				Call pernab.Open("", "")
+				Exit Forall
+			End If
+		End Forall
+	Else
+		' try to get the address book from the Notes.ini names param
+		curnab = s.GetEnvironmentString("NAMES", True)
+		curnabarr = Split(curnab, ",")
+		If Isarray(curnabarr) Then curnab = Fulltrim(curnabarr(0))
+		Set pernab = s.GetDatabase("", curnab)
+		If Not(pernab.IsOpen) Then
+			' not found that way, so try it with a manual setting
+			Set pernab = s.GetDatabase("", "names.nsf")
+		End If
+	End If
+	' if it still isn't set here, then give up
+	If Not(pernab.IsOpen) Then Error 1002, "Unable to open Personal Address Book"
+	
+	Set accview = pernab.GetView("SAPAccountsByIP~User")
+	If accview Is Nothing Then Error 1000, "Unable to open view: SAPAccountsByIP~User"
+	
+	Set sapdoc = accview.GetDocumentByKey(sapkey, True)
+	
+	If sapdoc Is Nothing Then Error 1002, "Unable to find SAP Account (server~user: " & sapkey & ") in Personal Address Book"
+	
+	Forall f In fldarr
+		sapflds(f) = sapdoc.GetItemValue(f)(0)
+	End Forall
+	
+getOut:
+	Exit Function
+errHandler:
+	getSAPprofileByKey = Err
+	On Error Goto 0
+	Select Case Err
+	Case 1000
+		Error Err, Error$ & " [in " & Lsi_info(2) & "]"
+	Case 1002
+		Error Err, Error$
+	Case Else
+		Error Err, Error$ & " (err: " & Err & "; erl: " & Erl & ") [in " & Lsi_info(2) & "]"
+	End Select
+	Resume getOut
+End Function
