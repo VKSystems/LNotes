@@ -1,0 +1,71 @@
+Sub CalculateEfforts (adminNo As String, doc As NotesDocument )
+	Dim session As New NotesSession
+	Dim db As NotesDatabase
+	Dim view As NotesView
+	Dim dc As NotesDocumentCollection
+	Dim doc2 As NotesDocument
+	
+	Dim ABAP As Double
+	Dim BASIS As Double
+	Dim Documentation As Double
+	Dim Functional As Double
+	Dim Middleware As Double
+	Dim Rework As Double
+	Dim Security As Double
+	Dim Testing As Double
+	Dim Other As Double
+	
+	Set db = session.CurrentDatabase
+	Set view = db.GetView("lookup_CompleteTasksCR")
+	Set dc = view.GetAllDocumentsByKey(adminNo, True)
+	
+	Set doc2 = dc.GetFirstDocument
+	
+	ABAP = 0
+	BASIS = 0
+	Documentation = 0
+	Functional = 0
+	Middleware = 0
+	Rework = 0
+	Security = 0
+	Testing = 0
+	Other =0
+	
+	While Not doc2 Is Nothing
+		
+		Select Case doc2.TaskType(0)
+		Case "ABAP"
+			ABAP = ABAP + doc2.ActualTime(0)
+		Case "BASIS"
+			BASIS = BASIS + doc2.ActualTime(0)
+		Case "Documentation"
+			Documentation = Documentation + doc2.ActualTime(0)
+		Case "Functional"
+			Functional = Functional + doc2.ActualTime(0)
+		Case "Middleware"
+			Middleware = Middleware + doc2.ActualTime(0)
+		Case "Rework"
+			Rework = Rework + doc2.ActualTime(0)
+		Case "Security"
+			Security = Security + doc2.ActualTime(0)
+		Case "Testing"
+			Testing = Testing + doc2.ActualTime(0)
+		Case Else
+			Other = Other + doc2.ActualTime(0)
+		End Select
+		
+		Set doc2 = dc.GetNextDocument(doc2)
+		
+	Wend
+	
+	doc.AFABAP = ABAP
+	doc.AFBASIS = BASIS
+	doc.AFDocumentation = Documentation
+	doc.AFFunctional = Functional
+	doc.AFMiddleware = Middleware
+	doc.AFRework = Rework
+	doc.AFSecurity = Security
+	doc.AFTesting = Testing
+	doc.Other = Other
+	
+End Sub
