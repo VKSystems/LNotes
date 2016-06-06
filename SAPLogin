@@ -1,0 +1,96 @@
+Public Function SAPLoginWithOptions (fields  List As Variant, EnableGUI As Boolean) As Integer
+	
+	' rxb 30 mar, 06, changed from input fields contained in a NotesDocument
+	' to field names in a list
+	
+	' rxb 21 Dec. 05, modified to return Error number 789 if login to sap fails
+	' (which could be incorrect user login info, or connectivity problem....)
+	' removed msgbox
+	
+	Dim strSAPSystem  As String
+	Dim strSAPServer  As String
+	Dim strSAPSysno As String
+	Dim strSAPClient  As String
+	Dim strSAPUser As String
+	Dim strSAPPassword As String
+	Dim strSAPLanguage As String
+	Dim strDebug As String
+	
+	If Not (g_SAPconnection Is Nothing) Then
+		' already set up with a connection
+		SAPLoginWithOptions = 0
+		Exit Function
+	End If
+	
+	If g_SAPsession Is Nothing Then
+		Set g_SAPsession = New lcsession
+		g_SAPsession.connectionpooling = True
+	End If
+	
+	On Error Goto errorhandler
+	
+	' read out the login data, set up the connection
+	
+	If Iselement(fields("SAPSystemName")) Then
+		strSAPSystem  = fields("SAPSystemName")
+	End If
+	strSAPServer  = fields("SAPServerIP")
+	strSAPSysno = fields("SAPSystemNumber")
+	strSAPClient  = fields("SAPClientNumber")
+	strSAPUser = fields("SAPUserName")
+	strSAPPassword = fields("SAPUserPassword")
+	strSAPLanguage = fields("SAPLangDesignator")
+	
+	' note that the strSAPSystem parameter is optional
+	If Len(strSAPServer & strSAPSysno & strSAPClient & strSAPUser & strSAPPassword & strSAPLanguage) = 0 Then
+          'Seems there is no active Logon configuration
+		SAPLoginWithOptions = False
+		Msgbox "No active logon configuration, failed to access or login to the SAP system"
+		Exit Function     
+	End If
+	
+     'Create the server object and fill up the necessary  properties for logon.
+	Set g_SAPconnection = New LCConnection("sap")
+	g_SAPconnection.Userid = strSAPUser 
+	g_SAPconnection.Password = strSAPPassword 
+	g_SAPconnection.Client= strSAPClient 
+	g_SAPconnection.Destination= strSAPSystem
+	g_SAPconnection.SystemNo=Val (strSAPSysno)
+	g_SAPconnection.Language= strSAPLanguage
+	g_SAPconnection.Server= strSAPServer	
+	
+	' Short debug message
+	strDebug = "Logging in to server: " & strSAPServer & ", as user: " & strSAPUser
+	WriteDebugLog strDebug, ""
+	
+	' optional stuff here
+	If EnableGUI Then g_SAPconnection.EnableSAPGui = True
+	
+	' (RXB 4/10/06: use notes.ini variable to set debuglevel
+	Dim s As New notessession
+	Dim level As Integer
+	level = s.GetEnvironmentValue("NASS_DEBUG_LEVEL")
+	If level > 0 Then g_SAPconnection.debuglevel = level
+	
+     'logon
+	g_SAPconnection.Connect
+	g_SAPconnection.mapbyname = True
+	g_SAPconnection.Metadata = "*"
+	
+	' RXB (4/21/06), spr KHOD6P326U, connector assumes Unicode by
+	' default, but not all 4.6c systems are unicode
+	g_SAPconnection.SAPReadCodePage=LCSTREAMFMT_NATIVE
+	SAPLoginWithOptions = 0
+	Print "Logon to SAP successful at " &  Now
+	Exit Function
+	
+errorhandler:
+	If g_SAPsession.status <> LCSUCCESS Then
+		status = g_SAPsession.GetStatus(result, Msgcode, Msg)
+		Error 789, result
+	Else
+		Resume Next 		' keep going on success!
+	End If
+	'Msgbox result
+	
+End Function
