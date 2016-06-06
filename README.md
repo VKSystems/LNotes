@@ -1,0 +1,2 @@
+# LNotes
+LotusScript
